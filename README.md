@@ -92,7 +92,7 @@ cd datSlim</code></pre>
 <h2>Contatti</h2>
 <p>Per ulteriori informazioni:</p>
 <ul>
-    <li><strong>Email</strong>: tuo.email@example.com</li>
+    <li><strong>Email</strong>: info@webrooster.it</li>
     <li><strong>GitHub</strong>: <a href="https://github.com/datRooster">datRooster</a></li>
 </ul>
 
