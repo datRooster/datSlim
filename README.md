@@ -65,8 +65,9 @@ cd datSlim</code></pre>
 
 <h3>Endpoint di Autenticazione</h3>
 <ul>
-    <li><strong>Registrazione</strong>: <code>POST /api/auth/register</code></li>
-    <li><strong>Login</strong>: <code>POST /api/auth/login</code></li>
+    <li><strong>Registrazione</strong>: <code>POST /api/auth/register</code><p><i>Accetta name, email, password, e password_confirm</i></p></li>
+    <li><strong>Login</strong>: <code>POST /api/auth/login</code><p><i>Accetta email e password</i></p></li>
+    <li><strong>Dashboard</strong>: <code>POST /api/dashboard</code> (richiede il token di accesso)</li>
     <li><strong>Logout</strong>: <code>POST /api/auth/logout</code> (richiede il token di accesso)</li>
 </ul>
 
