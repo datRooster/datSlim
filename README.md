@@ -2,7 +2,6 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>datSlim - Un'applicazione Laravel con autenticazione API</title>
 </head>
 <body>
 
