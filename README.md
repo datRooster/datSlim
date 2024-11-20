@@ -3,49 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>datSlim - Un'applicazione Laravel con autenticazione API</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }
-        h1, h2, h3 {
-            color: #333;
-        }
-        pre {
-            background: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-        code {
-            background: #eaeaea;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-        ul {
-            list-style: disc inside;
-        }
-        ol {
-            list-style: decimal inside;
-        }
-        a {
-            color: #0366d6;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        hr {
-            border: none;
-            border-top: 1px solid #ccc;
-            margin: 40px 0;
-        }
-        em {
-            color: #555;
-        }
-    </style>
 </head>
 <body>
 
@@ -109,9 +66,9 @@ cd datSlim</code></pre>
 
 <h3>Endpoint di Autenticazione</h3>
 <ul>
-    <li><strong>Registrazione</strong>: <code>POST /api/register</code></li>
-    <li><strong>Login</strong>: <code>POST /api/login</code></li>
-    <li><strong>Logout</strong>: <code>POST /api/logout</code> (richiede il token di accesso)</li>
+    <li><strong>Registrazione</strong>: <code>POST /api/auth/register</code></li>
+    <li><strong>Login</strong>: <code>POST /api/auth/login</code></li>
+    <li><strong>Logout</strong>: <code>POST /api/auth/logout</code> (richiede il token di accesso)</li>
 </ul>
 
 <h2>Testing e Qualità del Codice</h2>
@@ -136,7 +93,7 @@ cd datSlim</code></pre>
 <p>Per ulteriori informazioni:</p>
 <ul>
     <li><strong>Email</strong>: tuo.email@example.com</li>
-    <li><strong>GitHub</strong>: <a href="https://github.com/tuo-username">tuo-username</a></li>
+    <li><strong>GitHub</strong>: <a href="https://github.com/datRooster">datRooster</a></li>
 </ul>
 
 <hr>
