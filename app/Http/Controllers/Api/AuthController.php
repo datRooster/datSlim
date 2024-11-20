@@ -44,14 +44,30 @@ class AuthController extends Controller
     {
         $request->validate([
             "email" => "required|string|email",
-            "password" => "required"
+            "password" => "required|string",
         ]);
-
+    
         /** @var User|null $user */
         $user = User::where("email", $request->input('email'))->first();
 
-        if (!Hash::check((string) $request->input('password'), (string) $user->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+        //$user potrebbe essere null se non viene trovato nessun utente con l’email fornita.
+        //Se si tenta di accedere a $user->password senza verificare che $user non sia null 
+        //si incorre in warning phpstan, standardizzazione. 
+        if (!$user) { return response()->json(['error' => 'Credenziali non valide'], 401);}
+        
+        //Anche se hai specificato le regole di validazione, 
+        //PHPStan potrebbe non essere in grado di dedurre il tipo. Puoi aiutare PHPStan aggiungendo 
+        //un’annotazione di tipo o un controllo is_string().
+
+        $password = $request->input('password');
+        
+        if (!is_string($password)) {
+            throw new \UnexpectedValueException('Il campo password deve essere una stringa.');
+        }
+        
+        // Controllo se l'utente esiste
+        if (!Hash::check($password, $user->password)) {
+            return response()->json(['error' => 'Credenziali non valide'], 401);
         }
 
         $token = $user->createToken("myAccessToken")->accessToken;

@@ -17,9 +17,7 @@ class User extends Authenticatable
     protected $keyType = 'string'; 
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'uuid',
@@ -36,15 +34,12 @@ class User extends Authenticatable
     public string $uuid;
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
     /**
      * Get the attributes that should be cast.
      *
@@ -62,7 +57,7 @@ class User extends Authenticatable
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function (User $model) {
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
             }
