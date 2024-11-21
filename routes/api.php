@@ -10,6 +10,6 @@ Route::post("auth/login"            ,[AuthController::class,        "login"]);
 
 // Rotte Protette
 Route::group(["middleware" => ["auth:api"]],function(){
-    Route::get("auth/logout"         ,[AuthController::class,      "logout"]);
+    Route::post("auth/logout"         ,[AuthController::class,      "logout"]);
     Route::get("dashboard"           ,[AuthController::class,   "dashboard"]);
 });
