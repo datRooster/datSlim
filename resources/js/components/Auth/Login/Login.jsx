@@ -9,6 +9,8 @@ import {
     Alert,
 } from "@mui/material";
 
+import API_URL from "../../../config";
+
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,11 +19,15 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         axios
-            .post("api/auth/login", {
+            .post(`${API_URL}api/auth/login`, {
                 email,
                 password,
             })
             .then((response) => {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    location.replace("/");
+                }
                 localStorage.setItem("token", response.data.token);
                 location.replace("dashboard")
             })
