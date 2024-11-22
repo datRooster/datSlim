@@ -9,7 +9,7 @@ Route::post("auth/login"            ,[AuthController::class,        "login"]);
 
 
 // Rotte Protette
-Route::group(["middleware" => ["auth:api"]],function(){
+Route::group(["middleware" => ["auth:api","remember_me"]],function(){
     Route::post("auth/logout"         ,[AuthController::class,      "logout"]);
     Route::get("dashboard"           ,[AuthController::class,   "dashboard"]);
 });
