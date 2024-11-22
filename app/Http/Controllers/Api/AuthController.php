@@ -14,6 +14,7 @@ class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
+            
         $request->validate([
             "name" => "required|string",
             "email" => "required|string|email|unique:users",
@@ -41,10 +42,11 @@ class AuthController extends Controller
     }
 
     public function login(Request $request): JsonResponse
-    {
+    {        
         $request->validate([
             "email" => "required|string|email",
             "password" => "required|string",
+            "remember_me" => "boolean",
         ]);
     
         /** @var User|null $user */
@@ -71,6 +73,42 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken("myAccessToken")->accessToken;
+        
+        $rememberMe = $request->input('remember_me',false);
+
+        if ($rememberMe) {
+            $expiration = now()->addWeeks(2);
+            $cookie = cookie(
+                'remember_token', // Nome del cookie
+                $token, // Valore del cookie
+                $expiration->diffInMinutes(), // Durata in minuti
+                '/', // Path
+                'localhost', // Dominio (null per localhost)
+                false, // Secure (false per ambiente non HTTPS)
+                true, // HttpOnly
+                'Lax' // SameSite (usa 'None' se stai testando con domini diversi e HTTPS)
+            );
+            
+            return response()->json([
+                "status" => "success",
+                "message" => "Login Effettuato con successo.",
+                "token" => $token,
+                "data" => [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "cookie_data" => [
+                        "name" => $cookie->getName(),
+                        "value" => $cookie->getValue(),
+                        "domain" => $cookie->getDomain(),
+                        "path" => $cookie->getPath(),
+                        "secure" => $cookie->isSecure(),
+                        "httponly" => $cookie->isHttpOnly(),
+                        "samesite" => $cookie->getSameSite()
+                    ]
+                ],
+            ])->cookie($cookie);
+        }
 
         return response()->json([
             "status" => "success",
