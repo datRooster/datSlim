@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Laravel\Passport\Passport;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Crypt;
 
 class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
+            
         $request->validate([
             "name" => "required|string",
             "email" => "required|string|email|unique:users",
@@ -41,10 +46,11 @@ class AuthController extends Controller
     }
 
     public function login(Request $request): JsonResponse
-    {
+    {        
         $request->validate([
             "email" => "required|string|email",
             "password" => "required|string",
+            "remember_me" => "boolean",
         ]);
     
         /** @var User|null $user */
@@ -70,7 +76,35 @@ class AuthController extends Controller
             return response()->json(['error' => 'Credenziali non valide'], 401);
         }
 
-        $token = $user->createToken("myAccessToken")->accessToken;
+        $token = $user->createToken("auth_token")->accessToken;
+        $rememberMe = $request->input('remember_me',false);
+
+        if ($rememberMe) {
+            $rememberMeToken = Str::random(60);
+            $user->update(['remember_token' => $rememberMeToken]);
+
+            return response()->json([
+                'status' => "success",
+                'message' => 'Login Effettuato con Successo!',
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'expire_at' => Passport::tokensExpireIn(Carbon::now()->addHours(24)),
+                "data" => [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "email" => $user->email
+                ],
+            ])->cookie(
+                'remember_me',
+                Crypt::encrypt($rememberMeToken),
+                43200, // 30 giorni
+                '/',    // Percorso globale
+                null,   // Dominio
+                false,  // Cambia a true in produzione per HTTPS
+                true    // HttpOnly
+            );
+                
+        }
 
         return response()->json([
             "status" => "success",
@@ -122,4 +156,49 @@ class AuthController extends Controller
             "message" => "Logout effettuato con successo",
         ]);
     }
+
+    public function authenticateWithRememberMe(Request $request): JsonResponse 
+    {
+        $rememberMeToken = $request->cookie('remember_me');
+        
+        if (!$rememberMeToken) {
+            return response()->json(['status' => 'error', 'message' => 'No remember me token found'], 401);
+        }
+        try {
+            // Decripta il token dal cookie
+            $decryptedToken = Crypt::decrypt($rememberMeToken);
+        
+            // Debug per verificare il valore decriptato
+            if ($decryptedToken === null) {
+                return response()->json(['message' => 'Decrypted token is null'], 500);
+            }
+        
+            // Cerca l'utente nel database
+            $user = User::where('remember_token', $decryptedToken)->first();
+        
+            // Debug per verificare se l'utente è stato trovato
+            if (!$user) {
+                return response()->json(['message' => 'Token valid, but user not found'], 404);
+            }
+        
+            // Genera un nuovo access token
+            $newAccessToken = $user->createToken('auth_token')->accessToken;
+        
+            return response()->json([
+                'access_token' => $newAccessToken,
+                'user' => $user,
+            ]);
+        
+        } catch (\Exception $e) {
+            // Debug nel catch
+            return response()->json([
+                'message' => 'Error during authentication',
+                'exception' => $e->getMessage(), // Messaggio dell'errore
+                'remember_me' => $rememberMeToken, // Cookie grezzo
+                'decrypted_token' => $decryptedToken ?? 'N/A', // Token decriptato
+            ], 500); 
+        }
+        
+    }
+    
 }
