@@ -1,8 +1,7 @@
 import React from 'react';
-//import Login from './components/Auth/Login/Login';
-import Login from './components/sign-in-side/SignInSide'
+import Login from './components/Layout/Auth/Login/Login';
 import Dashboard from './components/Layout/Dashboard';
-import PrivateRoute from './components/Auth/PrivateRoute';
+import PrivateRoute from './components/Layout/Auth/PrivateRoute';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App(){

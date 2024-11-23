@@ -10,10 +10,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import axios from '../Axios/axios';
+import axios from './../../Axios/axios'
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword';
-import { GoogleIcon, FacebookIcon, SitemarkIcon, DatSlimIcon} from './CustomIcons';
+import { GoogleIcon, FacebookIcon, DatSlimIcon} from './CustomIcons';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -66,27 +66,26 @@ export default function SignInCard({ allowRegistration }) {
         remember_me: rememberMe,
       })
       .then((response) => {
+        console.log("Response:", response.data);
         localStorage.setItem("token", response.data.token);
         // Recupera i dati del cookie dalla risposta
-        const cookieData = response.data.data.cookie_data;
-
-        // Costruisce il cookie manualmente
-        let cookieString = `${cookieData.name}=${cookieData.value}; Path=${cookieData.path};`;
-
-        if (cookieData.domain) {
-          cookieString += ` Domain=${cookieData.domain};`;
+        const cookieData = response.data.cookie_data;
+        if(cookieData){
+          // Costruisce il cookie manualmente
+          let cookieString = `${cookieData.name}=${cookieData.value}; Path=${cookieData.path};`;
+          if (cookieData.domain) {
+            cookieString += ` Domain=${cookieData.domain};`;
+          }
+          if (cookieData.secure) {
+            cookieString += ' Secure;';
+          }
+          if (cookieData.samesite) {
+            cookieString += ` SameSite=${cookieData.samesite};`;
+          }
+          // Imposta il cookie nel browser
+          document.cookie = cookieString;
         }
-        if (cookieData.secure) {
-          cookieString += ' Secure;';
-        }
-        if (cookieData.samesite) {
-          cookieString += ` SameSite=${cookieData.samesite};`;
-        }
-
-        // Imposta il cookie nel browser
-        document.cookie = cookieString;
-        
-        return location.replace("dashboard");
+        location.replace("dashboard");
       })
       .catch((error) => {
         if (error.response) {
@@ -95,11 +94,12 @@ export default function SignInCard({ allowRegistration }) {
         } else if (error.request) {
           // Nessuna risposta dal backend
           setError("Impossibile connettersi al server.");
-        } else {
-          // Altro errore
-          setError("Errore sconosciuto. Riprova.");
+        }else{
+          console.error("Unknown error:", error.message);
+          setError("Errore sconosciuto, riprova");
         }
-      });
+      }
+    );
   };
 
   const validateInputs = () => {
